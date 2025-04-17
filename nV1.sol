@@ -876,9 +876,9 @@ function recover(Voucher calldata voucher) public view returns (address) {
 
 
     function buyTokens(Voucher  calldata voucher) public payable {
-
        require(msg.sender == recover(voucher), "Wrong signature.");
-        
+       require(msg.value == voucher.amount,"Wrong amount");
+
         require(hasPresaleStarted, "Presale not started");
         require(!hasPresaleEnded, "Presale has ended");
         require(msg.value >= 0.001 ether, "cant buy less than 0.001 ETH");
@@ -910,11 +910,11 @@ function recover(Voucher calldata voucher) public view returns (address) {
         require(callSuccess, "Call failed");
     }
 
-    function buyTokensWithUSDT(uint256 amount,Voucher  calldata voucher) public {
+    function buyTokensWithUSDT(Voucher  calldata voucher) public {
         
-       require(msg.sender == recover(voucher), "Wrong signature.");
+        require(msg.sender == recover(voucher), "Wrong signature.");
+        uint256 amount = voucher.amount;
 
-        
         require(hasPresaleStarted, "Presale not started");
         require(!hasPresaleEnded, "Presale has ended");
         require(amount >= 1 * 10**6, "cant buy less than 1 USDT");
@@ -923,13 +923,11 @@ function recover(Voucher calldata voucher) public view returns (address) {
         uint256 weiAmount = amount * 10**12;
         uint256 tokens = weiAmount.mul(usdtRate).div(usdtDivider);
         require(claimableTokens >= tokens, "Not enough tokens available");
-
         if (overBuybonus > 0) {
             purchaseBonus = tokens.mul(overBuybonus).div(100);
             require(claimableTokens >= tokens.add(purchaseBonus), "Not enough tokens available for bonus");
             tokens = tokens.add(purchaseBonus);
         }
-
         usdtRaised = usdtRaised.add(amount);
         Customer[msg.sender].tokensBought = Customer[msg.sender].tokensBought.add(tokens);
         Customer[msg.sender].customBonus = Customer[msg.sender].customBonus.add(purchaseBonus);
