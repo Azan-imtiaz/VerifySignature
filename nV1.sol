@@ -1,3 +1,7 @@
+/**
+ *Submitted for verification at testnet.bscscan.com on 2025-04-17
+*/
+
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.26;
@@ -773,7 +777,7 @@ contract ChainlinkPriceOracle {
 
     constructor() {
         // Eth / USD
-        priceFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
+        priceFeed = AggregatorV3Interface(0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526);
     }
 
     function getLatestPrice() public view returns (int) {
@@ -819,8 +823,8 @@ string private constant SIGNING_DOMAIN = "Voucher-Domain";
 
     mapping(address => tokenBuyer) public Customer;
 
-    IERC20 public  token = IERC20(0xf228dC07759D3DEb4EdcBa511697C18bAb715AAe);
-    IERC20 public  usdt = IERC20(0xdAC17F958D2ee523a2206206994597C13D831ec7);
+    IERC20 public  token = IERC20(0x25D680c3069ab19F4f006Cd60479A5aBBa9D034a);
+    IERC20 public  usdt = IERC20(0xB94B2615C7Ee979714Db1Ef0a3deDbCBF3A1dcB9);
     
     uint256 private claimableTokens;
     address public wallet = payable(0x09E21BeE436569398C3Aafb16d8C93Fc669DC4Be);
@@ -876,7 +880,8 @@ function recover(Voucher calldata voucher) public view returns (address) {
 
 
     function buyTokens(Voucher  calldata voucher) public payable {
-       require(msg.sender == recover(voucher), "Wrong signature.");
+      
+       require(owner() == recover(voucher), "Wrong signature.");
        require(msg.value == voucher.amount,"Wrong amount");
 
         require(hasPresaleStarted, "Presale not started");
@@ -912,7 +917,7 @@ function recover(Voucher calldata voucher) public view returns (address) {
 
     function buyTokensWithUSDT(Voucher  calldata voucher) public {
         
-        require(msg.sender == recover(voucher), "Wrong signature.");
+        require(owner() == recover(voucher), "Wrong signature.");
         uint256 amount = voucher.amount;
 
         require(hasPresaleStarted, "Presale not started");
