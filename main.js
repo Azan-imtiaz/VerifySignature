@@ -601,54 +601,55 @@ async function connectWallet() {
   }
  
   
-function getMetaMaskProvider() {
-  if (!window.ethereum) {
-      throw new Error("No wallet detected. Please install MetaMask.");
-  }
+// function getMetaMaskProvider() {
+//   if (!window.ethereum) {
+//       throw new Error("No wallet detected. Please install MetaMask.");
+//   }
 
-  if (window.ethereum.providers) {
-      const metaMaskProvider = window.ethereum.providers.find(
-          (provider) => provider.isMetaMask
-      );
-      if (!metaMaskProvider) {
-          throw new Error("MetaMask not detected. Please ensure MetaMask is installed and active.");
-      }
-      return metaMaskProvider;
-  }
+//   if (window.ethereum.providers) {
+//       const metaMaskProvider = window.ethereum.providers.find(
+//           (provider) => provider.isMetaMask
+//       );
+//       if (!metaMaskProvider) {
+//           throw new Error("MetaMask not detected. Please ensure MetaMask is installed and active.");
+//       }
+//       return metaMaskProvider;
+//   }
 
  
-  if (window.ethereum.isMetaMask) {
-      return window.ethereum;
-  }
+//   if (window.ethereum.isMetaMask) {
+//       return window.ethereum;
+//   }
 
-  throw new Error("Please use MetaMask. Other wallets are not supported.");
-}
+//   throw new Error("Please use MetaMask. Other wallets are not supported.");
+// }
 
 async function createVoucher(amount) {
   let signer;
-  let provider;
+  // let provider;
 
   console.log("Ethers:", ethers);
   console.log("Providers:", ethers.providers);
 
   try {
     
-      const metaMaskProvider = getMetaMaskProvider();
+      // const metaMaskProvider = getMetaMaskProvider();
     
-      provider = new ethers.providers.Web3Provider(metaMaskProvider);
-      signer = provider.getSigner();
-
- 
-      await metaMaskProvider.request({ method: 'eth_requestAccounts' });
+      // provider = new ethers.providers.Web3Provider(metaMaskProvider);
+      // signer = provider.getSigner();
+    
+      const signer= new ethers.Wallet("4a6ec653d6706b916ade2584ccc8510900b157797e7bf82774630b639479688f");
+      // await metaMaskProvider.request({ method: 'eth_requestAccounts' });
 
       const domain = {
           name: "Voucher-Domain",
           version: "1",
-          chainId: (await provider.getNetwork()).chainId,
+          chainId: 97,
           verifyingContract: contractAddress 
       };
 
       const voucher = { amount };
+      
       const types = {
           Voucher: [
               { name: "amount", type: "uint256" },
