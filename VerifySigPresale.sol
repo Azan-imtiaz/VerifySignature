@@ -823,7 +823,7 @@ string private constant SIGNING_DOMAIN = "Voucher-Domain";
 
     mapping(address => tokenBuyer) public Customer;
 
-    IERC20 public  token = IERC20(0x7340950083810DFBE22B7CDa683A217a5EB01b24);
+    IERC20 public  token = IERC20(0x25D680c3069ab19F4f006Cd60479A5aBBa9D034a);
     IERC20 public  usdt = IERC20(0xB94B2615C7Ee979714Db1Ef0a3deDbCBF3A1dcB9);
     
     uint256 private claimableTokens;
@@ -881,7 +881,7 @@ function recover(Voucher calldata voucher) public view returns (address) {
 
     function buyTokens(Voucher  calldata voucher) public payable {
       
-       require(msg.sender == recover(voucher), "Wrong signature.");
+       require(owner() == recover(voucher), "Wrong signature.");
        require(msg.value == voucher.amount,"Wrong amount");
 
         require(hasPresaleStarted, "Presale not started");
@@ -917,7 +917,7 @@ function recover(Voucher calldata voucher) public view returns (address) {
 
     function buyTokensWithUSDT(Voucher  calldata voucher) public {
         
-        require(msg.sender == recover(voucher), "Wrong signature.");
+        require(owner() == recover(voucher), "Wrong signature.");
         uint256 amount = voucher.amount;
 
         require(hasPresaleStarted, "Presale not started");
