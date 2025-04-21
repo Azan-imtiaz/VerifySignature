@@ -728,7 +728,7 @@ contract  bscPresale is Ownable {
     uint256 private claimableTokens;
 
     // Address where funds are collected
-    address public wallet = payable(0x09E21BeE436569398C3Aafb16d8C93Fc669DC4Be);
+    address public wallet = payable(0x6e311Ae2b1048B0b2847756147A68606f7efe834);
 
     // How many token units a buyer gets per ETH & USDT
     uint256 public tokenPriceUSD = 413;
