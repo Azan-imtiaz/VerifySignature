@@ -722,7 +722,7 @@ contract  bscPresale is Ownable {
     mapping (address => tokenBuyer) public Customer;
 
     //USDT token address
-    IERC20 public immutable usdt = IERC20(0xB94B2615C7Ee979714Db1Ef0a3deDbCBF3A1dcB9);
+    IERC20 public immutable usdt = IERC20(0x65781Dd953bB02cCf3136F6D26e62b4D8ab1c95c);
 
     //tokens that can be claimed
     uint256 private claimableTokens;
