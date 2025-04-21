@@ -62,6 +62,7 @@ library ECDSA {
 }
 
 abstract contract EIP712 {
+
     bytes32 private immutable _HASHED_NAME;
     bytes32 private immutable _HASHED_VERSION;
     bytes32 private immutable _TYPE_HASH;
@@ -167,7 +168,7 @@ abstract contract Ownable is Context {
      * thereby removing any functionality that is only available to the owner.
      */
     function renounceOwnership() public virtual onlyOwner {
-        _transferOwnership(address(0));
+        _transferOwnership(address(0)) ;
     }
 
     /**
@@ -752,14 +753,17 @@ library SafeMath {
 
 
 contract claimContract is Ownable,EIP712{
+
     string private constant SIGNING_DOMAIN = "Voucher-Domain";
     string private constant SIGNATURE_VERSION = "1";
 
-    IERC20 public  token = IERC20(0x25D680c3069ab19F4f006Cd60479A5aBBa9D034a);
+    IERC20 public  token = IERC20(0x6B4878C9c4D739aAD58AFCF4216cBD265D2135df);
 
     mapping(uint256 => bool) private usedNonces;
 
      uint256 private claimableTokens;
+
+     bool private presaleStatus;
 
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -767,37 +771,59 @@ contract claimContract is Ownable,EIP712{
 
   struct Voucher {
     uint256 amount;
-    uint256 nonce; 
+    uint256 nonce;
     bytes signature;
-}
+   }
 
     address signerWalletPublicKey= 0x689d844350AE3423cE7a46C40008fa115DFaA348;
 
     constructor() EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION){
+  presaleStatus=false;
     }
 
-function recover(Voucher calldata voucher) public view returns (address) {
+   function recover(Voucher calldata voucher) public view returns (address) {
     bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(
-        keccak256("Voucher(uint256 amount,uint256 nonce)"), // Update type
+        keccak256("Voucher(uint256 amount,uint256 nonce)"), 
         voucher.amount,
         voucher.nonce
     )));
     address signer = ECDSA.recover(digest, voucher.signature);
     return signer;
 }
+ 
 
-   function claimTokens(Voucher calldata voucher) public {
+ function startPresale() public onlyOwner{
+     
+        presaleStatus = true;
+}
+ 
+
+  function claimTokens(Voucher calldata voucher) public {
+    require(presaleStatus,"Presale not ended yet");
     require(!usedNonces[voucher.nonce], "Voucher already used");
     require(signerWalletPublicKey == recover(voucher), "Wrong signature.");
+
     uint256 amount = voucher.amount;
+
     require(token.balanceOf(address(this)) >= amount, "Insufficient token balance");
+    require(claimableTokens >= amount, "Claim exceeds claimable limit");
+
     usedNonces[voucher.nonce] = true; 
     token.safeTransfer(msg.sender, amount);
     claimableTokens = claimableTokens.sub(amount);
+
+   
+}
+
+  function setSigner(address newSigner) external onlyOwner {
+        require(newSigner != address(0), "Invalid signer address");
+        signerWalletPublicKey = newSigner;
+  }
+  function checkPresaleStatus() public view returns (bool) {
+        return presaleStatus;
     }
 
-
-    function deposit(uint amount) external onlyOwner {
+   function deposit(uint amount) external onlyOwner {
         require(amount > 0, "Deposit value must be greater than 0");
         token.safeTransferFrom(msg.sender, address(this), amount);
         claimableTokens = claimableTokens.add(amount);
@@ -809,11 +835,4 @@ function recover(Voucher calldata voucher) public view returns (address) {
         token.safeTransfer(msg.sender, amount);
         claimableTokens = claimableTokens.sub(amount);
     }
-
-   
-  function setSigner(address newSigner) external onlyOwner {
-        require(newSigner != address(0), "Invalid signer address");
-        signerWalletPublicKey = newSigner;
-  }
-
 }
