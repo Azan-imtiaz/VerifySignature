@@ -758,7 +758,8 @@ contract  bscPresale is Ownable {
     }
     
     //START PRESALE
-    function startPresale() public onlyOwner{
+    function startPresale(uint256 _depositeAmount) public onlyOwner{
+       claimableTokens=_depositeAmount;
         hasPresaleStarted = true;
     }
 
