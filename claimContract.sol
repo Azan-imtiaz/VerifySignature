@@ -1,11 +1,3 @@
-/**
- *Submitted for verification at testnet.bscscan.com on 2025-05-05
-*/
-
-/**
- *Submitted for verification at testnet.bscscan.com on 2025-05-03
-*/
-
 //SPDX-License-Identifier:MIT
 
 pragma solidity 0.8.26;
