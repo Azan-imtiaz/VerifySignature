@@ -1,3 +1,11 @@
+/**
+ *Submitted for verification at testnet.bscscan.com on 2025-05-05
+*/
+
+/**
+ *Submitted for verification at testnet.bscscan.com on 2025-05-03
+*/
+
 //SPDX-License-Identifier:MIT
 
 pragma solidity 0.8.26;
@@ -757,13 +765,13 @@ contract claimContract is Ownable,EIP712{
     string private constant SIGNING_DOMAIN = "Voucher-Domain";
     string private constant SIGNATURE_VERSION = "1";
 
-    IERC20 public  token = IERC20(0x6B4878C9c4D739aAD58AFCF4216cBD265D2135df);
+    IERC20 public  token = IERC20(0x32c925DB69EA515F148ebF4936261978559d77EF);
 
     mapping(uint256 => bool) private usedNonces;
 
      uint256 private claimableTokens;
 
-     bool private presaleStatus;
+   
 
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -777,8 +785,10 @@ contract claimContract is Ownable,EIP712{
 
     address signerWalletPublicKey= 0x689d844350AE3423cE7a46C40008fa115DFaA348;
 
+    mapping (address=>bool) public hasClaimed;
+
     constructor() EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION){
-  presaleStatus=false;
+
     }
 
    function recover(Voucher calldata voucher) public view returns (address) {
@@ -792,14 +802,11 @@ contract claimContract is Ownable,EIP712{
 }
  
 
- function startPresale() public onlyOwner{
-     
-        presaleStatus = true;
-}
+
  
 
   function claimTokens(Voucher calldata voucher) public {
-    require(presaleStatus,"Presale not ended yet");
+    require(!hasClaimed[msg.sender],"Tokens already Claimed");
     require(!usedNonces[voucher.nonce], "Voucher already used");
     require(signerWalletPublicKey == recover(voucher), "Wrong signature.");
 
@@ -807,21 +814,21 @@ contract claimContract is Ownable,EIP712{
 
     require(token.balanceOf(address(this)) >= amount, "Insufficient token balance");
     require(claimableTokens >= amount, "Claim exceeds claimable limit");
-
     usedNonces[voucher.nonce] = true; 
+    hasClaimed[msg.sender]=true;
     token.safeTransfer(msg.sender, amount);
     claimableTokens = claimableTokens.sub(amount);
-
-   
 }
+
+  function userStatus(address _address) public view returns(bool){
+    return hasClaimed[_address];
+  }
 
   function setSigner(address newSigner) external onlyOwner {
         require(newSigner != address(0), "Invalid signer address");
         signerWalletPublicKey = newSigner;
   }
-  function checkPresaleStatus() public view returns (bool) {
-        return presaleStatus;
-    }
+
 
    function deposit(uint amount) external onlyOwner {
         require(amount > 0, "Deposit value must be greater than 0");
